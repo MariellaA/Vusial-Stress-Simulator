@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Vusial Stress Simulator</string>
+    <string name="start_simulation">Start Simulation</string>
+    <string name="add_effect">Add Effect</string>
+    <string name="add_overlay">Add Overlay</string>
+    <string name="dummy_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod odio tortor, at imperdiet arcu fermentum nec. Aenean congue orci eget tellus cursus eleifend. Pellentesque laoreet ante sit amet gravida cursus. In vel ex luctus, ullamcorper nisl vel, ultrices dolor. Vivamus quis enim scelerisque, sodales risus sed, volutpat justo. Fusce sit amet ligula eget augue suscipit pellentesque in id leo. Aenean molestie diam ut ligula vehicula, eu iaculis erat dictum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod odio tortor, at imperdiet arcu fermentum nec. Aenean congue orci eget tellus cursus eleifend. Pellentesque laoreet ante sit amet gravida cursus. In vel ex luctus, ullamcorper nisl vel, ultrices dolor.</string>
+    <string name="choose_a_simulation_type">Choose a simulation type</string>
+    <string name="text">Text</string>
+    <string name="image">Image</string>
+    <string name="type_text">Type Text</string>
+    <string name="scan_text">Scan Text</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="upload_photo">Upload Photo</string>
 </resources>
