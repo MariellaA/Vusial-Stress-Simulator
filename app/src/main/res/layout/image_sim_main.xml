@@ -10,13 +10,17 @@
         android:id="@+id/overlayISimButtonMain"
         android:layout_width="155dp"
         android:layout_height="50dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/add_overlay"
         android:textAlignment="center"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/imageSimMainVertGuideline"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -24,14 +28,14 @@
         android:id="@+id/effectISimButtonMain"
         android:layout_width="155dp"
         android:layout_height="50dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:text="@string/add_effect"
         android:textAlignment="center"
         android:textSize="16sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/overlayISimButtonMain"
-        app:layout_constraintEnd_toStartOf="@+id/overlayISimButtonMain"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@+id/imageSimMainVertGuideline"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -50,15 +54,16 @@
 
     <View
         android:id="@+id/viewISimMain"
-        android:layout_width="341dp"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:background="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/startISimButtonMain"
         app:layout_constraintEnd_toEndOf="@+id/overlayISimButtonMain"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/effectISimButtonMain"
         app:layout_constraintTop_toBottomOf="@+id/overlayISimButtonMain"
         app:layout_constraintVertical_bias="0.0" />
@@ -67,27 +72,46 @@
         android:id="@+id/uploadPhotoButton"
         android:layout_width="160dp"
         android:layout_height="56dp"
-        android:layout_marginTop="136dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/upload_photo"
         android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/imageSimMainHorGuideline"
         app:layout_constraintEnd_toEndOf="@+id/viewISimMain"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="@+id/viewISimMain"
-        app:layout_constraintTop_toTopOf="@+id/viewISimMain" />
+        app:layout_constraintTop_toTopOf="@+id/viewISimMain"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/takePhotoButton"
         android:layout_width="160dp"
         android:layout_height="56dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="172dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/take_photo"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/viewISimMain"
         app:layout_constraintEnd_toEndOf="@+id/uploadPhotoButton"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/uploadPhotoButton"
-        app:layout_constraintTop_toBottomOf="@+id/uploadPhotoButton"
+        app:layout_constraintTop_toTopOf="@+id/imageSimMainHorGuideline"
         app:layout_constraintVertical_bias="0.0" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/imageSimMainHorGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.500684" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/imageSimMainVertGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="205dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

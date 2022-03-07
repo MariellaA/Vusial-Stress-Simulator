@@ -10,13 +10,17 @@
         android:id="@+id/overlayTSimButtonMain"
         android:layout_width="155dp"
         android:layout_height="50dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/add_overlay"
         android:textAlignment="center"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textSimMainVertGuideline"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -24,14 +28,14 @@
         android:id="@+id/effectTSimButtonMain"
         android:layout_width="155dp"
         android:layout_height="50dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:text="@string/add_effect"
         android:textAlignment="center"
         android:textSize="16sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/overlayTSimButtonMain"
-        app:layout_constraintEnd_toStartOf="@+id/overlayTSimButtonMain"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@+id/textSimMainVertGuideline"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -50,15 +54,16 @@
 
     <View
         android:id="@+id/viewTSimMain"
-        android:layout_width="341dp"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:background="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/startTSimButtonMain"
         app:layout_constraintEnd_toEndOf="@+id/overlayTSimButtonMain"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/effectTSimButtonMain"
         app:layout_constraintTop_toBottomOf="@+id/overlayTSimButtonMain"
         app:layout_constraintVertical_bias="0.0" />
@@ -67,27 +72,47 @@
         android:id="@+id/typeTextButton"
         android:layout_width="120dp"
         android:layout_height="56dp"
-        android:layout_marginTop="136dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/type_text"
         android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/textSimMainHorGuideline"
         app:layout_constraintEnd_toEndOf="@+id/viewTSimMain"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/viewTSimMain"
-        app:layout_constraintTop_toTopOf="@+id/viewTSimMain" />
+        app:layout_constraintTop_toTopOf="@+id/viewTSimMain"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/scanTextButton"
         android:layout_width="120dp"
         android:layout_height="56dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="172dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/scan_text"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/viewTSimMain"
         app:layout_constraintEnd_toEndOf="@+id/typeTextButton"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/typeTextButton"
-        app:layout_constraintTop_toBottomOf="@+id/typeTextButton"
+        app:layout_constraintTop_toTopOf="@+id/textSimMainHorGuideline"
         app:layout_constraintVertical_bias="0.0" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/textSimMainHorGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.500684" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/textSimMainVertGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="205dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
