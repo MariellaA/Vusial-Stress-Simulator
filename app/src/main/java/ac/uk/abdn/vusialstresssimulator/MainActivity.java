@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        new Handler().postDelayed(new Runnable() {     // Displays an image for 4 sec before loading the Main Menu
+        new Handler().postDelayed(new Runnable() {     // Displays text/image for 4 sec before loading the Main Menu
             @Override
             public void run() {
                 Intent greetIntent = new Intent(MainActivity.this, MainMenuActivity.class);

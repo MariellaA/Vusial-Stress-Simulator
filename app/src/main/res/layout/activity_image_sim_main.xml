@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".ImageSimMainActivity"
     android:background="#EDEDED">
 
     <Button
-        android:id="@+id/overlayTSimButtonMain"
+        android:id="@+id/overlayISimButtonMain"
         android:layout_width="155dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
@@ -20,12 +21,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textSimMainVertGuideline"
+        app:layout_constraintStart_toStartOf="@+id/imageSimMainVertGuideline"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/effectTSimButtonMain"
+        android:id="@+id/effectISimButtonMain"
         android:layout_width="155dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
@@ -33,13 +34,13 @@
         android:text="@string/add_effect"
         android:textAlignment="center"
         android:textSize="16sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/overlayTSimButtonMain"
-        app:layout_constraintEnd_toStartOf="@+id/textSimMainVertGuideline"
+        app:layout_constraintBaseline_toBaselineOf="@+id/overlayISimButtonMain"
+        app:layout_constraintEnd_toStartOf="@+id/imageSimMainVertGuideline"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/startTSimButtonMain"
+        android:id="@+id/startISimButtonMain"
         android:layout_width="wrap_content"
         android:layout_height="55dp"
         android:layout_marginStart="16dp"
@@ -53,7 +54,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <View
-        android:id="@+id/viewTSimMain"
+        android:id="@+id/viewISimMain"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -61,55 +62,54 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:background="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/startTSimButtonMain"
-        app:layout_constraintEnd_toEndOf="@+id/overlayTSimButtonMain"
+        app:layout_constraintBottom_toTopOf="@+id/startISimButtonMain"
+        app:layout_constraintEnd_toEndOf="@+id/overlayISimButtonMain"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/effectTSimButtonMain"
-        app:layout_constraintTop_toBottomOf="@+id/overlayTSimButtonMain"
+        app:layout_constraintStart_toStartOf="@+id/effectISimButtonMain"
+        app:layout_constraintTop_toBottomOf="@+id/overlayISimButtonMain"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/typeTextButton"
-        android:layout_width="120dp"
+        android:id="@+id/uploadPhotoButton"
+        android:layout_width="160dp"
         android:layout_height="56dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/type_text"
+        android:text="@string/upload_photo"
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/textSimMainHorGuideline"
-        app:layout_constraintEnd_toEndOf="@+id/viewTSimMain"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/viewTSimMain"
-        app:layout_constraintTop_toTopOf="@+id/viewTSimMain"
+        app:layout_constraintBottom_toTopOf="@+id/imageSimMainHorGuideline"
+        app:layout_constraintEnd_toEndOf="@+id/viewISimMain"
+        app:layout_constraintStart_toStartOf="@+id/viewISimMain"
+        app:layout_constraintTop_toTopOf="@+id/viewISimMain"
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/scanTextButton"
-        android:layout_width="120dp"
+        android:id="@+id/takePhotoButton"
+        android:layout_width="160dp"
         android:layout_height="56dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/scan_text"
+        android:text="@string/take_photo"
         android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/viewTSimMain"
-        app:layout_constraintEnd_toEndOf="@+id/typeTextButton"
-        app:layout_constraintStart_toStartOf="@+id/typeTextButton"
-        app:layout_constraintTop_toTopOf="@+id/textSimMainHorGuideline"
+        app:layout_constraintBottom_toBottomOf="@+id/viewISimMain"
+        app:layout_constraintEnd_toEndOf="@+id/uploadPhotoButton"
+        app:layout_constraintStart_toStartOf="@+id/uploadPhotoButton"
+        app:layout_constraintTop_toTopOf="@+id/imageSimMainHorGuideline"
         app:layout_constraintVertical_bias="0.0" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/textSimMainHorGuideline"
+        android:id="@+id/imageSimMainHorGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.500684" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/textSimMainVertGuideline"
+        android:id="@+id/imageSimMainVertGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
