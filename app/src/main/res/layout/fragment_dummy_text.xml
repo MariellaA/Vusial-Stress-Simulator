@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayoutDummyT"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".DummyTextFragment">
+
+    <EditText
+        android:id="@+id/dummyEditTextFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:autofillHints="Text"
+        android:ems="10"
+        android:fadeScrollbars="false"
+        android:gravity="start|top"
+        android:hint="@string/dummy_text"
+        android:inputType="textMultiLine"
+        android:maxLines="20"
+        android:scrollbars="vertical"
+        android:text="@string/dummy_text" />
+
+</FrameLayout>

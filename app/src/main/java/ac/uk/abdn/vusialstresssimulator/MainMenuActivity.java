@@ -22,6 +22,7 @@ public class MainMenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent doTextSimIntent = new Intent(MainMenuActivity.this, TextSimMainActivity.class);
+//                Intent doTextSimIntent = new Intent(MainMenuActivity.this, DummyTextSimActivity.class);
                 startActivity(doTextSimIntent);
                 Log.d("Editable", "The button got clicked");
             }

@@ -14,16 +14,14 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         android:text="@string/add_overlay"
         android:textAlignment="center"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:onClick="chooseOverlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/textSimMainVertGuideline"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/effectTSimButtonMain"
@@ -34,9 +32,9 @@
         android:text="@string/add_effect"
         android:textAlignment="center"
         android:textSize="16sp"
+        android:onClick="chooseEffect"
         app:layout_constraintBaseline_toBaselineOf="@+id/overlayTSimButtonMain"
-        app:layout_constraintEnd_toStartOf="@+id/textSimMainVertGuideline"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintEnd_toStartOf="@+id/overlayTSimButtonMain"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -53,53 +51,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <View
-        android:id="@+id/viewTSimMain"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:background="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/startTSimButtonMain"
-        app:layout_constraintEnd_toEndOf="@+id/overlayTSimButtonMain"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/effectTSimButtonMain"
-        app:layout_constraintTop_toBottomOf="@+id/overlayTSimButtonMain"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/typeTextButton"
-        android:layout_width="120dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/type_text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/viewTSimMain"
-        app:layout_constraintEnd_toEndOf="@+id/viewTSimMain"
-        app:layout_constraintStart_toStartOf="@+id/viewTSimMain"
-        app:layout_constraintTop_toTopOf="@+id/viewTSimMain" />
-
-    <Button
-        android:id="@+id/scanTextButton"
-        android:layout_width="120dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/scan_text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/viewTSimMain"
-        app:layout_constraintEnd_toEndOf="@+id/typeTextButton"
-        app:layout_constraintStart_toStartOf="@+id/typeTextButton"
-        app:layout_constraintTop_toBottomOf="@+id/typeTextButton"
-        app:layout_constraintVertical_bias="0.0" />
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/textSimMainVertGuideline"
         android:layout_width="wrap_content"
@@ -107,20 +58,18 @@
         android:orientation="vertical"
         app:layout_constraintGuide_begin="205dp" />
 
-    <Button
-        android:id="@+id/useDefaultTextButton"
-        android:layout_width="120dp"
-        android:layout_height="56dp"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerViewTextSim"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/default_text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/typeTextButton"
-        app:layout_constraintEnd_toEndOf="@+id/typeTextButton"
-        app:layout_constraintStart_toStartOf="@+id/typeTextButton"
-        app:layout_constraintTop_toTopOf="@+id/viewTSimMain"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintBottom_toTopOf="@+id/startTSimButtonMain"
+        app:layout_constraintEnd_toEndOf="@+id/overlayTSimButtonMain"
+        app:layout_constraintStart_toStartOf="@+id/effectTSimButtonMain"
+        app:layout_constraintTop_toBottomOf="@+id/overlayTSimButtonMain"
+        tools:layout="@layout/fragment_all_buttons_text_sim" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
