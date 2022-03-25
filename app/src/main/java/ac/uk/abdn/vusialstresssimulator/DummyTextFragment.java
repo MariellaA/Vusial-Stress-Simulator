@@ -54,11 +54,6 @@ public class DummyTextFragment extends Fragment {
 //        }
 //    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d("RESUME", "OnResume Stage");
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
