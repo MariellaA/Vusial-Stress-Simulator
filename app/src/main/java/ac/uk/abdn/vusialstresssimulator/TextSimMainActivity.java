@@ -6,7 +6,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
@@ -26,6 +29,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
 
@@ -33,10 +37,15 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.w3c.dom.Text;
+
 import java.lang.annotation.Target;
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class TextSimMainActivity extends AppCompatActivity {
 
@@ -53,19 +62,33 @@ public class TextSimMainActivity extends AppCompatActivity {
     private String overlayRadioButtonString;
     private String effectRadioButtonString;
     private final AllButtonsTextSimFragment allButtonsTextSimFragment = new AllButtonsTextSimFragment();
-
     private Fragment dummyTextFragmentMain;
     private Fragment typeTextFragmentMain;
     private ObjectAnimator doubleTextAnimatorX;
 
-    private Handler mHandler = new Handler(Looper.getMainLooper());
-    private int duration = 6000;
+    private String[] splitDummyText;
+
+    private final Handler mHandlerShuffle = new Handler(Looper.getMainLooper());
+    private final Handler mHandlerFade = new Handler(Looper.getMainLooper());
+    private final Handler mHandlerButtonReset = new Handler(Looper.getMainLooper());
+    private final int duration = 10000;
+    private final int durationFadeReverse = 250;
+    private final int durationShuffleButtonReset = 10;
     private long startTime = System.currentTimeMillis();
     final Runnable rShuffle = new Runnable() {
         public void run() {
+            TextView defaultText = findViewById(R.id.dummyEditTextFragment);
+            Button startTSimButton = findViewById(R.id.startTSimButtonMain);
+            effectButton = findViewById(R.id.effectTSimButtonMain);
+            overlayButton = findViewById(R.id.overlayTSimButtonMain);
             if (System.currentTimeMillis() - startTime < duration){         // runs until duration(6 seconds) is reached
-                mHandler.postDelayed(this,250);         // delay every text shuffling
-                EditText defaultText = findViewById(R.id.dummyEditTextFragment);
+                mHandlerShuffle.postDelayed(this,700);         // delay every text shuffling
+
+
+                startTSimButton.setVisibility(View.INVISIBLE);
+                effectButton.setClickable(false);
+                overlayButton.setClickable(false);
+
                 String defaultTextString = defaultText.getText().toString();
 
                 StringBuilder scrambledStringBuilder = new StringBuilder();     // Creates a String Builder which
@@ -88,18 +111,212 @@ public class TextSimMainActivity extends AppCompatActivity {
         }
     };
 
+    final Runnable rButtonReset = new Runnable() {
+        public void run() {
+            Button startTSimButton = findViewById(R.id.startTSimButtonMain);
+            effectButton = findViewById(R.id.effectTSimButtonMain);
+            overlayButton = findViewById(R.id.overlayTSimButtonMain);
+            if (System.currentTimeMillis() - startTime < duration){         // runs until duration(6 seconds) is reached
+                mHandlerShuffle.postDelayed(this,5);         // delay every text shuffling
+
+                startTSimButton.setVisibility(View.VISIBLE);
+                effectButton.setClickable(true);
+                overlayButton.setClickable(true);
+            }
+        }
+    };
+
+    final Runnable rFade = new Runnable() {
+        @Override
+        public void run() {
+            TextView defaultText = findViewById(R.id.dummyEditTextFragment);
+            Button startTSimButton = findViewById(R.id.startTSimButtonMain);
+            if (System.currentTimeMillis() - startTime < duration){
+                mHandlerFade.postDelayed(this,500);
+
+                String defaultTextString = defaultText.getText().toString();
+                startTSimButton.setVisibility(View.INVISIBLE);
+
+                splitDummyText = defaultTextString.split(" ");     // splits the text and stores the original in a list
+                // String[] temporaryText = splitDummyText;    // Temporary list
+
+                int wordIndex = (int) (Math.random() * splitDummyText.length-1);    // random word index
+                String currentWord = splitDummyText[wordIndex];
+
+                if (currentWord.matches("\\s") || currentWord.length() < 3) {       // if it contains white space
+                    wordIndex = (int) (Math.random() * splitDummyText.length-1);
+                    Log.d("Word EMPTY", "Empty");
+                }
+                if (!currentWord.matches("\\s") && currentWord.length() > 3){       // if it doesn't contain any white spaces
+
+                    StringBuilder wordAtIndexCharsReplace = new StringBuilder();    // holds current word?
+                    // if (currentWord.substring(currentWord.length() - 1).equals(".")) {
+                    if (currentWord.endsWith(".")) {
+                        // wordlength = currentWord.length() -2;
+                        Log.d("Word with dot", splitDummyText[wordIndex]);
+                        for (int i = 0; i < currentWord.length() - 1; i++) {   // for every letter in word -> replace it with "-"
+                            wordAtIndexCharsReplace.append("" + "¬");
+
+                            // System.out.println("last character: " + currentWord.substring(currentWord.length() - 2));
+                        }
+                        wordAtIndexCharsReplace.append("" + ".");
+                    }
+                    //if (currentWord.substring(currentWord.length() - 1).equals(",")) {
+                    if (currentWord.endsWith(",")) {
+                        // wordlength = currentWord.length() -2;
+                        Log.d("Word with comma", splitDummyText[wordIndex]);
+                        for (int i = 0; i < currentWord.length() - 1; i++) {   // for every letter in word -> replace it with "-"
+                            wordAtIndexCharsReplace.append("" + "¬");
+
+                            // System.out.println("last character: " + currentWord.substring(currentWord.length() - 2));
+                        }
+                        wordAtIndexCharsReplace.append("" + ",");
+                    } else {
+                        // wordlength = currentWord.length();
+                        Log.d("Word", splitDummyText[wordIndex]);
+                        for (int i = 0; i < currentWord.length() - 1; i++) {   // for every letter in word -> replace it with "-"
+                            wordAtIndexCharsReplace.append("" + "¬");
+
+                        }
+                    }
+
+                    splitDummyText[wordIndex] = wordAtIndexCharsReplace.toString();  // changes the word in the list to its new form
+
+                    StringBuilder finalTextBuilder = new StringBuilder();
+                    for (String word : splitDummyText) {
+                        finalTextBuilder.append(word + " ");
+                    }
+
+                    String newTextString = finalTextBuilder.toString();
+                    String finalText = newTextString.replaceAll("¬", "  ");
+
+                    // defaultText.setText(Arrays.toString(finalText));
+                    defaultText.setText(finalText);
+                }
+            }
+        }
+    };
+    final Runnable rFadeReverse = new Runnable() {
+        @Override
+        public void run() {
+            if (System.currentTimeMillis() - startTime < duration) {
+                mHandlerFade.postDelayed(this, 200);
+                TextView defaultText = findViewById(R.id.dummyEditTextFragment);
+                defaultText.setText(getResources().getText(R.string.dummy_text));
+                Log.d("SHAHETHRTHSRTH", "GRGEBTBHRTHTAHTRSHBT");
+            }
+        }
+    };
+
+    private final Handler mHandlerDouble = new Handler(Looper.getMainLooper());
+    final Runnable rDouble1 = new Runnable() {
+        @Override
+        public void run() {
+            TextView defaultText = findViewById(R.id.dummyEditTextFragment);
+            Button startTSimButton = findViewById(R.id.startTSimButtonMain);
+            effectButton = findViewById(R.id.effectTSimButtonMain);
+            overlayButton = findViewById(R.id.overlayTSimButtonMain);
+
+            if (System.currentTimeMillis() - startTime < duration){         // runs until duration(6 seconds) is reached
+                mHandlerDouble.postDelayed(this,50);         // delay every text shuffling
+
+                defaultText.setShadowLayer(3.0f, 1.5f, 1.0f, Color.BLACK);
+
+                startTSimButton.setVisibility(View.INVISIBLE);
+                effectButton.setClickable(false);
+                overlayButton.setClickable(false);
+            }
+        }
+    };
+
+    final Runnable rDouble2 = new Runnable() {
+        @Override
+        public void run() {
+            TextView defaultText = findViewById(R.id.dummyEditTextFragment);
+            if (System.currentTimeMillis() - startTime < duration){         // runs until duration(6 seconds) is reached
+                mHandlerDouble.postDelayed(this,125);         // delay every text shuffling
+//                mHandlerDouble.postDelayed(this, 2000);
+                defaultText.setShadowLayer(3.0f, 2.0f, 2.0f, Color.BLACK);
+            }
+        }
+    };
+
+    final Runnable rDouble3 = new Runnable() {
+        @Override
+        public void run() {
+            TextView defaultText = findViewById(R.id.dummyEditTextFragment);
+            if (System.currentTimeMillis() - startTime < duration){         // runs until duration(6 seconds) is reached
+                mHandlerDouble.postDelayed(this,250);         // delay every text shuffling
+                defaultText.setShadowLayer(3.0f, 3.0f, 3.0f, Color.BLACK);
+            }
+        }
+    };
+
+    final Runnable rDouble4 = new Runnable() {
+        @Override
+        public void run() {
+            TextView defaultText = findViewById(R.id.dummyEditTextFragment);
+            if (System.currentTimeMillis() - startTime < duration){         // runs until duration(6 seconds) is reached
+                mHandlerDouble.postDelayed(this,375);         // delay every text shuffling
+                defaultText.setShadowLayer(3.0f, 4.0f, 4.0f, Color.BLACK);
+            }
+        }
+    };
+
+    final Runnable rDouble5 = new Runnable() {
+        @Override
+        public void run() {
+            TextView defaultText = findViewById(R.id.dummyEditTextFragment);
+            if (System.currentTimeMillis() - startTime < duration){         // runs until duration(6 seconds) is reached
+                mHandlerDouble.postDelayed(this,500);         // delay every text shuffling
+                defaultText.setShadowLayer(3.0f, 5.0f, 5.0f, Color.BLACK);
+//                mHandlerDouble.postDelayed(this, 2000);
+//                defaultText.setShadowLayer(3.0f, 5.5f, 6.0f, Color.BLACK);
+//                mHandlerDouble.postDelayed(this, 2000);
+//                defaultText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.BLACK);
+                // defaultText.invalidate();   // updates this part of the UI
+            }
+        }
+    };
+
+    final Runnable rDouble6 = new Runnable() {
+        @Override
+        public void run() {
+            TextView defaultText = findViewById(R.id.dummyEditTextFragment);
+            if (System.currentTimeMillis() - startTime < duration){         // runs until duration(6 seconds) is reached
+                mHandlerDouble.postDelayed(this,725);         // delay every text shuffling
+                defaultText.setShadowLayer(3.0f, 5.5f, 6.0f, Color.BLACK);
+//                mHandlerDouble.postDelayed(this, 2000);
+//                defaultText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.BLACK);
+                // defaultText.invalidate();   // updates this part of the UI
+            }
+        }
+    };
+
+    final Runnable rDouble7 = new Runnable() {
+        @Override
+        public void run() {
+            TextView defaultText = findViewById(R.id.dummyEditTextFragment);
+            if (System.currentTimeMillis() - startTime < duration){         // runs until duration(6 seconds) is reached
+                mHandlerDouble.postDelayed(this,800);         // delay every text shuffling
+                defaultText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.BLACK);
+                // defaultText.invalidate();   // updates this part of the UI
+            }
+        }
+    };
+
 //    final Runnable rBlurry = new Runnable() {
 //        @Override
 //        public void run() {
 //
-//            if (System.currentTimeMillis() - startTime < duration) {         // runs until duration(6 seconds) is reached
+////            if (System.currentTimeMillis() - startTime < duration) {         // runs until duration(6 seconds) is reached
 //                mHandler.postDelayed(this, 250);         // delay every text shuffling
 //                EditText defaultText = findViewById(R.id.dummyEditTextFragment);
 //                defaultText.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 //                float filterRadius = defaultText.getTextSize() / 3;
 //                BlurMaskFilter blurryFilter = new BlurMaskFilter(filterRadius, BlurMaskFilter.Blur.NORMAL);
 //                defaultText.getPaint().setMaskFilter(blurryFilter);
-//            }
+////            }
 ////            defaultText.getPaint().setMaskFilter(null);
 ////            defaultText.invalidate();
 ////            defaultText.getPaint().reset();
@@ -107,6 +324,28 @@ public class TextSimMainActivity extends AppCompatActivity {
 //        }
 //
 //    };
+
+//final Runnable rDouble = new Runnable() {
+//    @Override
+//    public void run() {
+//
+//        if (System.currentTimeMillis() - startTime < duration) {         // runs until duration(6 seconds) is reached
+//
+//                // delay every text shuffling
+//            EditText defaultText = findViewById(R.id.dummyEditTextFragment);
+//    //        defaultText.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+//            defaultText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.BLACK);
+//            mHandler.postDelayed(this, 1000);
+//            defaultText.setShadowLayer(0.0f, 0.0f, 0.0f, Color.BLACK);
+//
+//        }
+////            defaultText.getPaint().setMaskFilter(null);
+////            defaultText.invalidate();
+////            defaultText.getPaint().reset();
+////            defaultText.invalidate();   // updates this part of the UI
+//    }
+//
+//};
 
 
     @Override
@@ -124,8 +363,6 @@ public class TextSimMainActivity extends AppCompatActivity {
 
         fragmentTSimTransaction.add(R.id.fragmentContainerViewTextSim, allButtonsTextSimFragment, "ALL_BUTTONS_FRAGMENT").commit();
 
-
-
         startTSimButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,110 +372,8 @@ public class TextSimMainActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-//                if (allButtonsTextSimFragment.isVisible()) {
-//                    Toast.makeText(getApplicationContext(), "Choose text option first", Toast.LENGTH_LONG).show();
-//                }
-//                else
-//                {
-//                    if (effectButton.getText().toString().equals(getResources().getString(R.string.add_effect)) || effectButton.getText().toString().equals("None")) {
-//                        Toast.makeText(getApplicationContext(), "Choose effect first", Toast.LENGTH_LONG).show();
-////                        llSettings.setVisibility(View.GONE);
-////                        llMenu.setVisibility(View.VISIBLE);
-////                        textHelp.setText("Got It");
-//                    } else {
-//                        if (effectButton.getText().toString().equals("Shuffle")) {
-//                        //                        dummyTextFragmentMain = getSupportFragmentManager().findFragmentByTag("DEFAULT_TEXT_FRAGMENT");
-//                        //                        EditText defaultText = dummyTextFragmentMain.getView().findViewById(R.id.dummyEditTextFragment);
-//                        //                        EditText defaultText = findViewById(R.id.dummyEditTextFragment);
-//                        //                        String defaultTextString = defaultText.getText().toString();
-////                            long timer = System.currentTimeMillis();
-////                            long stopAt = timer + 20000;
-////                            Log.d("OVERLAY", "NONE");
-////                            // shuffleEffect(defaultText);
-////                            while (System.currentTimeMillis() < stopAt) {
-//
-//                                try { // THE WHOLE THING ACTUALLY CHANGES THE TEXT ONLY IF BUTTON IS MANUALLY PRESSED
-//                                    //                               shuffleEffect();  // shuffleEffect(defaultText);    called 13 times fo 13 sec
-//                                    //                                EditText defaultText = findViewById(R.id.dummyEditTextFragment);
-//                                    //                                String defaultTextString = defaultText.getText().toString();
-//                                    //                                String scrambledWordHolder = new String(" ");
-//                                    //                                StringBuilder scrambledStringBuilder = new StringBuilder();
-//                                    //                                Scanner wordScanner = new Scanner(defaultTextString);
-//                                    //                                while (wordScanner.hasNextLine()) {
-//                                    //                                    String wordScrambled = wordScanner.next();
-//                                    //                                    // System.out.println(wordScrambled);
-//                                    //                                    // System.out.println(scramble(wordScrambled));
-//                                    //                                    scrambledStringBuilder.append(scramble(wordScrambled)).append(" ");
-//                                    //                                }
-//                                    //                                scrambledWordHolder = scrambledStringBuilder.toString().trim();
-//                                    //                                defaultText.setText(scrambledWordHolder);
-//                                    //                                // Log.d("String", scrambledWordHolder);
-//                                    //                                Log.d("EditText String", defaultText.getText().toString());
-//                                    //                                wordScanner.close();
-////                                    shuffleEffect();
-//                                    startSim(view);
-//                                    Thread.sleep(1000);
-//
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            //}
-//                        }
-//
-////                        try {
-////                            startSim(view);
-////                        } catch (InterruptedException e) {
-////                            e.printStackTrace();
-////                        }
-//                    }
-//                }
-                //                }
-                //                if (buttonPressed == 2) {
-                //                    finish();
-                //                }
             }
         });
-//        startTSimButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (allButtonsTextSimFragment.isVisible()) {
-//                    Toast.makeText(getApplicationContext(), "Choose text option first", Toast.LENGTH_LONG).show();
-//                }
-//                else {
-//                    if (effectButton.getText().toString().equals(getResources().getString(R.string.add_effect)) || effectButton.getText().toString().equals("None")) {
-//                        Toast.makeText(getApplicationContext(), "Choose effect first", Toast.LENGTH_LONG).show();
-////                        llSettings.setVisibility(View.GONE);
-////                        llMenu.setVisibility(View.VISIBLE);
-////                        textHelp.setText("Got It");
-//                    }
-//                    else {
-//                        if (buttonPressed == 0) { // if pressed for the first time
-//                            try {
-//                                buttonPressed = 1;
-//                                while (buttonPressed == 1) {
-//                                    startSim(view);
-//                                    // startTSimButton.setText(getResources().getString(R.string.stop_simulation));
-//                                    Thread.sleep(1500);
-//                                }
-//                            }
-//                            catch(InterruptedException e)
-//                            {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        if (buttonPressed == 1)
-//                        {
-//                            buttonPressed = 0;
-//                            // startTSimButton.setText(getResources().getString(R.string.start_simulation));
-//                            finish();
-//                        }
-//                    }
-////                    rlOverlay.setVisibility(View.GONE);
-////                    textMessage.setVisibility(View.VISIBLE);
-//
-//                }
-//            }
-//        });
     }
 
     // https://www.youtube.com/watch?v=DyJ4hOS3qrQ&ab_channel=AndroidRion
@@ -267,6 +402,7 @@ public class TextSimMainActivity extends AppCompatActivity {
                         if (dummyTextFragmentMain.isVisible()) {     // add || typeTextFragmentMain.isVisible()
                             // Log.d("WORKS", "THIS WORKS");
                             if (overlayRadioButtonString.equals(overlay_options[0])) {
+                                dummyTextFragmentMain.getView().setBackgroundColor(Color.rgb(255, 255, 255));
                                 Log.d("OVERLAY", "NONE");
                                 overlayButton.setText(overlayRadioButtonString);
                             }
@@ -320,6 +456,7 @@ public class TextSimMainActivity extends AppCompatActivity {
         int id = view.getId();
         // dummyTextFragmentMain = getSupportFragmentManager().findFragmentByTag("DEFAULT_TEXT_FRAGMENT");
         // typeTextFragmentMain = getSupportFragmentManager().findFragmentByTag("TYPE_TEXT_FRAGMENT");
+        TextView defaultText = findViewById(R.id.dummyEditTextFragment);
         if (allButtonsTextSimFragment.isVisible()) {
             Toast.makeText(getApplicationContext(), "Choose text option first", Toast.LENGTH_LONG).show();
         } else {
@@ -338,6 +475,17 @@ public class TextSimMainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Snackbar.make(view, effectRadioButtonString, Snackbar.LENGTH_SHORT).show();
                         if (effectRadioButtonString.equals(effect_options[0])) {
+
+                            // Resets text shadow
+                            defaultText.setShadowLayer(0.0f, 0.0f, 0.0f, Color.BLACK);
+
+                            // Remove Blurry effect
+                            defaultText.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+                            defaultText.getPaint().setMaskFilter(null);
+
+                            // Resets EditText text
+                            defaultText.setText(getResources().getText(R.string.dummy_text));
+
                             Log.d("Effect", "None");
                             effectButton.setText(effectRadioButtonString);
                         }
@@ -386,7 +534,7 @@ public class TextSimMainActivity extends AppCompatActivity {
     }
 
     public void blurEffect(View view) {
-        EditText defaultText = findViewById(R.id.dummyEditTextFragment);
+        TextView defaultText = findViewById(R.id.dummyEditTextFragment);
         defaultText.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         float filterRadius = defaultText.getTextSize() / 9;
         BlurMaskFilter blurryFilter = new BlurMaskFilter(filterRadius, BlurMaskFilter.Blur.NORMAL);
@@ -405,11 +553,29 @@ public class TextSimMainActivity extends AppCompatActivity {
 //        defaultText.animShadowXY(doubleTextAnimatorXY);
 //    }
 
+//        public void animShadow(Integer toRadius,Integer toDx,Integer toDy) {
+//            EditText defaultText = findViewById(R.id.dummyEditTextFragment);
+//        // Animation doubleTextAnimatorXY = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+//        // defaultText.animShadowXY(doubleTextAnimatorXY);
+////            shadowRadius = PropertyValuesHolder.ofFloat("shadowRadius", fromRadius, toRadius);
+////            shadowDx = PropertyValuesHolder.ofFloat("shadowDx",fromDx, toDx);
+////            shadowDy = PropertyValuesHolder.ofFloat("shadowDy", fromDy, toDy);
+////
+////            ValueAnimator.ofPropertyValuesHolder(animShadow(shadowR))
+//            ObjectAnimator shadowRadius = ObjectAnimator.ofInt(defaultText, "shadowRadius", toRadius);
+//            ObjectAnimator shadowDx = ObjectAnimator.ofInt(defaultText, "shadowDx", toDx);
+//            ObjectAnimator shadowDy = ObjectAnimator.ofInt(defaultText, "shadowDy", toDy);
+//            AnimatorSet animSetShadow = new AnimatorSet();
+//            animSetShadow.playTogether(shadowRadius, shadowDx, shadowDy);
+//            animSetShadow.start();
+//    }
+
 
     public void startSim(View view) throws InterruptedException {
 
         String currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainerViewTextSim).getClass().getSimpleName();
         dummyTextFragmentMain = getSupportFragmentManager().findFragmentByTag("DEFAULT_TEXT_FRAGMENT");
+        Button startTSimButton = findViewById(R.id.startTSimButtonMain);
         // typeTextFragmentMain = getSupportFragmentManager().findFragmentByTag("TYPE_TEXT_FRAGMENT");
 
 //        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.frameLayoutDummyT);
@@ -417,6 +583,7 @@ public class TextSimMainActivity extends AppCompatActivity {
 //        if (currentFragment.getTag().equals("DEFAULT_TEXT_FRAGMENT")){
 //            Log.d("YES", "DEFAULT TEXT FRAGMENT IS SHOWN!");
 //        }
+
         if (allButtonsTextSimFragment.isVisible()) {
             // effectButton.setText("None");
             Toast.makeText(getApplicationContext(), "Choose text option first", Toast.LENGTH_LONG).show();
@@ -433,14 +600,19 @@ public class TextSimMainActivity extends AppCompatActivity {
     //                if (buttonPressed == 1) { // if pressed for the first time
                 if (dummyTextFragmentMain.isVisible()) {
 
-                    EditText defaultText = findViewById(R.id.dummyEditTextFragment);
+                    TextView defaultText = findViewById(R.id.dummyEditTextFragment);
                     String defaultTextString = defaultText.getText().toString();
+                    startTSimButton.setVisibility(View.VISIBLE);
 
 
 
                     if (effectButton.getText().toString().equals("Shuffle")) {
+                        defaultText.setText(getResources().getText(R.string.dummy_text));
+
                         startTime = System.currentTimeMillis();
-                        mHandler.post(rShuffle);
+                        mHandlerShuffle.post(rShuffle);
+                        mHandlerShuffle.postDelayed(rButtonReset, 9950);
+
                     }
                     if (effectButton.getText().toString().equals("Blurry")) {
 //                        startTime = System.currentTimeMillis();
@@ -452,20 +624,32 @@ public class TextSimMainActivity extends AppCompatActivity {
 //                        defaultText.getPaint().setMaskFilter(null);
 //                        defaultText.invalidate();   // updates this part of the UI
                     }
-//                    if (effectButton.getText().toString().equals("Fade")) {
-//                        startTime = System.currentTimeMillis();
-//                        mHandler.post(rTR);
-//                    }
+                    if (effectButton.getText().toString().equals("Fade")) {
+                        startTime = System.currentTimeMillis();
+                        mHandlerFade.post(rFade);
+                        mHandlerShuffle.postDelayed(rButtonReset, 9990);
+                        // mHandlerFade.postDelayed(rFadeReverse, 9820); // Returns the text to its previous state
+                        Log.d("StartTime", "I am HERE");
+                    }
                     if (effectButton.getText().toString().equals("Double")) {
                         Log.d("EFFECT", "DOUBLE");
-                        // YoYo.with(Techniques.Wave).duration(1000).repeat(1).playOn(defaultText);        // LAST I WAS TRYING TO DO THIS EFFECT!
+                        // YoYo.with(Techniques.Wave).duration(1000).repeat(1).playOn(defaultText);        
 //                        doubleTextAnimatorX = ObjectAnimator.ofFloat(defaultText.getShadowDx(), "shadowX",0.0f, 6.0f);
 //                        doubleTextAnimatorX.setDuration(1000);
 //                        doubleTextAnimatorX.setInterpolator(new LinearInterpolator());
 //                        doubleTextAnimatorX.start();
-
-
-                        defaultText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.BLACK);
+                        startTime = System.currentTimeMillis();
+                        mHandlerDouble.post(rDouble1);
+                        mHandlerDouble.postDelayed(rDouble2, 250);
+                        mHandlerDouble.postDelayed(rDouble3, 300);
+                        mHandlerDouble.postDelayed(rDouble4, 350);
+                        mHandlerDouble.postDelayed(rDouble5, 400);
+                        mHandlerDouble.postDelayed(rDouble6, 450);
+                        mHandlerDouble.postDelayed(rDouble7, 500);
+                        mHandlerShuffle.postDelayed(rButtonReset, 9945);
+                        //animShadow(3, 6, 7);
+                        // mHandler.post(rDouble);
+                        //defaultText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.BLACK);
                         // defaultText.setShadowLayer();
                     } else {
                         Log.d("NO", "NOT OPEN OR NULL!");
