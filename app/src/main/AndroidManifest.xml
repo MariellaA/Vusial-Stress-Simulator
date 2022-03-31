@@ -10,10 +10,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VusialStressSimulator">
         <activity
-            android:name=".DummyTextSimActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ImageSimMainActivity"
             android:exported="false"
             android:parentActivityName=".MainMenuActivity"
