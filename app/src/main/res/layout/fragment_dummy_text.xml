@@ -5,7 +5,7 @@
     android:id="@+id/frameLayoutDummyT"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/fragment_background"
     tools:context=".DummyTextFragment">
 
     <TextView
@@ -26,7 +26,7 @@
         android:scrollbars="none"
         android:scrollHorizontally="false"
         android:text="@string/dummy_text"
-        android:textColor="@color/black"
+        android:textColor="@color/main_text"
         android:textSize="18sp" />
 
 </FrameLayout>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ImageSimMainActivity"
-    android:background="#EDEDED">
+    android:background="@color/activity_background">
 
     <Button
         android:id="@+id/overlayISimButtonMain"
@@ -17,6 +17,7 @@
         android:layout_marginBottom="16dp"
         android:text="@string/add_overlay"
         android:textAlignment="center"
+        android:backgroundTint="@color/buttons"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,6 +35,7 @@
         android:text="@string/add_effect"
         android:textAlignment="center"
         android:textSize="16sp"
+        android:backgroundTint="@color/buttons"
         app:layout_constraintBaseline_toBaselineOf="@+id/overlayISimButtonMain"
         app:layout_constraintEnd_toStartOf="@+id/imageSimMainVertGuideline"
         app:layout_constraintHorizontal_bias="1.0"
@@ -48,6 +50,7 @@
         android:layout_marginBottom="16dp"
         android:text="@string/start_simulation"
         android:textAlignment="center"
+        android:backgroundTint="@color/run_sim_button"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,6 +81,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:text="@string/upload_photo"
+        android:backgroundTint="@color/buttons"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/imageSimMainHorGuideline"
         app:layout_constraintEnd_toEndOf="@+id/viewISimMain"
@@ -94,6 +98,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:text="@string/take_photo"
+        android:backgroundTint="@color/buttons"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/viewISimMain"
         app:layout_constraintEnd_toEndOf="@+id/uploadPhotoButton"

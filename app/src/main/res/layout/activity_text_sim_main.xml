@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EDEDED"
+    android:background="@color/activity_background"
     tools:context=".TextSimMainActivity">
 
     <Button
@@ -14,10 +14,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:onClick="chooseOverlay"
         android:text="@string/add_overlay"
         android:textAlignment="center"
+        android:backgroundTint="@color/buttons"
         android:textSize="16sp"
-        android:onClick="chooseOverlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/textSimMainVertGuideline"
@@ -29,10 +30,11 @@
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:onClick="chooseEffect"
         android:text="@string/add_effect"
         android:textAlignment="center"
+        android:backgroundTint="@color/buttons"
         android:textSize="16sp"
-        android:onClick="chooseEffect"
         app:layout_constraintBaseline_toBaselineOf="@+id/overlayTSimButtonMain"
         app:layout_constraintEnd_toStartOf="@+id/overlayTSimButtonMain"
         app:layout_constraintStart_toStartOf="parent" />
@@ -46,6 +48,7 @@
         android:layout_marginBottom="16dp"
         android:text="@string/start_simulation"
         android:textAlignment="center"
+        android:backgroundTint="@color/run_sim_button"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,5 +74,54 @@
         app:layout_constraintStart_toStartOf="@+id/effectTSimButtonMain"
         app:layout_constraintTop_toBottomOf="@+id/overlayTSimButtonMain"
         tools:layout="@layout/fragment_all_buttons_text_sim" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        android:contentDescription="@string/additional_features"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/startTSimButtonMain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fragmentContainerViewTextSim"
+        app:layout_constraintTop_toTopOf="@+id/startTSimButtonMain"
+        app:srcCompat="@drawable/ic__add" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        android:backgroundTint="@color/sub_add_buttons"
+        app:layout_constraintBottom_toTopOf="@+id/floatingActionButtonMain"
+        app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonMain"
+        app:srcCompat="@drawable/ic_camera" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButtonHelp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:backgroundTint="@color/sub_add_buttons"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/floatingActionButtonCamera"
+        app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonCamera"
+        app:srcCompat="@drawable/ic_help" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fragmentContainerViewTextSim"
+        app:layout_constraintTop_toTopOf="@+id/fragmentContainerViewTextSim"
+        tools:srcCompat="@tools:sample/avatars" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

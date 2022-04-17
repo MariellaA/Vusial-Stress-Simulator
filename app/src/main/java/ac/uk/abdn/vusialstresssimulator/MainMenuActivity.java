@@ -15,6 +15,7 @@ public class MainMenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        getSupportActionBar().setTitle("Main Menu");
 
         Button chooseTextSimButton = findViewById(R.id.textButton);
         Button chooseImageSimButton = findViewById(R.id.imageButton);
@@ -22,9 +23,9 @@ public class MainMenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent doTextSimIntent = new Intent(MainMenuActivity.this, TextSimMainActivity.class);
-//                Intent doTextSimIntent = new Intent(MainMenuActivity.this, DummyTextSimActivity.class);
                 startActivity(doTextSimIntent);
-                Log.d("Editable", "The button got clicked");
+                overridePendingTransition(R.anim.from_right, R.anim.to_left);
+                // Log.d("Editable", "The button got clicked");
             }
         });
         chooseImageSimButton.setOnClickListener(new View.OnClickListener() {
@@ -32,7 +33,13 @@ public class MainMenuActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent doImageSimIntent = new Intent(MainMenuActivity.this, ImageSimMainActivity.class);
                 startActivity(doImageSimIntent);
+                overridePendingTransition(R.anim.from_right, R.anim.to_left);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {   // App will not go further back than this activity
+        // super.onBackPressed();
     }
 }

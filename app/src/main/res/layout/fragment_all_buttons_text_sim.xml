@@ -5,9 +5,9 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    tools:context=".AllButtonsTextSimFragment"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:background="@color/fragment_background"
+    tools:context=".AllButtonsTextSimFragment">
 
     <Button
         android:id="@+id/defaultTextButton"
@@ -17,6 +17,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/buttons"
         android:text="@string/default_text"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/typeTextButton"
@@ -33,6 +34,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/buttons"
         android:text="@string/type_text"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -48,6 +50,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/buttons"
         android:text="@string/scan_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/typeTextButton"

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/activity_background"
     tools:context=".MainMenuActivity">
 
     <TextView
@@ -15,6 +16,7 @@
         android:layout_marginBottom="16dp"
         android:lines="2"
         android:text="@string/choose_a_simulation_type"
+        android:textColor="@color/hint_text"
         android:textAlignment="center"
         android:textSize="48sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -35,6 +37,7 @@
         android:text="@string/text"
         android:textAlignment="center"
         android:textSize="24sp"
+        android:backgroundTint="@color/buttons"
         app:layout_constraintBottom_toTopOf="@+id/mainMenuHorGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -53,6 +56,7 @@
         android:text="@string/image"
         android:textAlignment="center"
         android:textSize="24sp"
+        android:backgroundTint="@color/buttons"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/textButton"
         app:layout_constraintStart_toStartOf="@+id/textButton"

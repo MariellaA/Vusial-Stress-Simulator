@@ -1,58 +1,69 @@
 package ac.uk.abdn.vusialstresssimulator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.animation.AnimatorSet;
+import android.Manifest;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Color;
-import android.graphics.MaskFilter;
-import android.icu.lang.UProperty;
-import android.media.Image;
-import android.os.Build;
+import android.graphics.drawable.BitmapDrawable;
+import android.hardware.camera2.CameraAccessException;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.util.Log;
-import android.util.Property;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.Text;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
-import org.w3c.dom.Text;
 
-import java.lang.annotation.Target;
-import java.nio.ByteBuffer;
-import java.time.Duration;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+
 
 public class TextSimMainActivity extends AppCompatActivity {
 
     //    private EditText defaultText;
     private Button effectButton;
     private Button overlayButton;
+    private FloatingActionButton floatingAddButton, floatingCameraButton, floatingHelpButton;
+    private Animation fabRotateOpen, fabRotateClose, fabFromClosed, fabToClosed;
+    private boolean isOpen = false; // for the floatingAddButton
+    private ImageView takenImage;
+    private int currentUIMode;
 
     private static final String[] overlay_options = new String[]{
             "None", "Blue", "Purple", "Pink", "Green", "Yellow", "Orange"
@@ -66,6 +77,11 @@ public class TextSimMainActivity extends AppCompatActivity {
     private Fragment dummyTextFragmentMain;
     private Fragment typeTextFragmentMain;
     private ObjectAnimator doubleTextAnimatorX;
+    private static final int CAMERA_REQUEST = 100;
+    private static final int PERMISSION_REQUEST = 100;
+    private Bitmap photo;
+    private int rotationCompensation;
+    private String recognizedText;
 
     private String typeTextStringOriginal;
     private String[] splitDummyText;
@@ -135,6 +151,8 @@ public class TextSimMainActivity extends AppCompatActivity {
                 startTSimButton.setVisibility(View.INVISIBLE);
                 effectButton.setClickable(false);
                 overlayButton.setClickable(false);
+                typeText.setFocusableInTouchMode(false);
+                typeText.clearFocus();
 
                 String defaultTextString = typeText.getText().toString();
 
@@ -160,6 +178,7 @@ public class TextSimMainActivity extends AppCompatActivity {
 
     final Runnable rButtonReset = new Runnable() {
         public void run() {
+            EditText typeText = findViewById(R.id.typeTextFragmentEditText);
             Button startTSimButton = findViewById(R.id.startTSimButtonMain);
             effectButton = findViewById(R.id.effectTSimButtonMain);
             overlayButton = findViewById(R.id.overlayTSimButtonMain);
@@ -168,6 +187,8 @@ public class TextSimMainActivity extends AppCompatActivity {
                 startTSimButton.setVisibility(View.VISIBLE);
                 effectButton.setClickable(true);
                 overlayButton.setClickable(true);
+                // typeText.setFocusableInTouchMode(true); // Cause problem when in DefaultText
+                // typeText.clearFocus();
                 Log.d("RESET BUTTON", "RESET THAT GOD DAMN BUTTON");
             }
         }
@@ -254,6 +275,8 @@ public class TextSimMainActivity extends AppCompatActivity {
 
                 String typeTextString = typeText.getText().toString();
                 startTSimButton.setVisibility(View.INVISIBLE);
+                typeText.setFocusableInTouchMode(false);
+                typeText.clearFocus();
 
                 splitTypeText = typeTextString.split(" ");     // splits the text and stores the original in a list
                 // String[] temporaryText = splitDummyText;    // Temporary list
@@ -336,8 +359,12 @@ public class TextSimMainActivity extends AppCompatActivity {
 
             if (System.currentTimeMillis() - startTime < duration){         // runs until duration(6 seconds) is reached
                 mHandlerDouble.postDelayed(this,50);         // delay every text shuffling
-
-                defaultText.setShadowLayer(3.0f, 1.5f, 1.0f, Color.BLACK);
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    defaultText.setShadowLayer(3.0f, 1.5f, 1.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    defaultText.setShadowLayer(3.0f, 1.5f, 1.0f, Color.WHITE);
+                }
 
                 startTSimButton.setVisibility(View.INVISIBLE);
                 effectButton.setClickable(false);
@@ -353,7 +380,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,125);
 //                mHandlerDouble.postDelayed(this, 2000);
-                defaultText.setShadowLayer(3.0f, 2.0f, 2.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    defaultText.setShadowLayer(3.0f, 2.0f, 2.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    defaultText.setShadowLayer(3.0f, 2.0f, 2.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -364,7 +397,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             TextView defaultText = findViewById(R.id.dummyEditTextFragment);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,250);
-                defaultText.setShadowLayer(3.0f, 3.0f, 3.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    defaultText.setShadowLayer(3.0f, 3.0f, 3.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    defaultText.setShadowLayer(3.0f, 3.0f, 3.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -375,7 +414,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             TextView defaultText = findViewById(R.id.dummyEditTextFragment);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,375);
-                defaultText.setShadowLayer(3.0f, 4.0f, 4.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    defaultText.setShadowLayer(3.0f, 4.0f, 4.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    defaultText.setShadowLayer(3.0f, 4.0f, 4.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -386,7 +431,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             TextView defaultText = findViewById(R.id.dummyEditTextFragment);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,500);
-                defaultText.setShadowLayer(3.0f, 5.0f, 5.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    defaultText.setShadowLayer(3.0f, 5.0f, 5.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    defaultText.setShadowLayer(3.0f, 5.0f, 5.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -397,7 +448,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             TextView defaultText = findViewById(R.id.dummyEditTextFragment);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,725);
-                defaultText.setShadowLayer(3.0f, 5.5f, 6.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    defaultText.setShadowLayer(3.0f, 5.5f, 6.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    defaultText.setShadowLayer(3.0f, 5.5f, 6.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -408,7 +465,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             TextView defaultText = findViewById(R.id.dummyEditTextFragment);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,800);
-                defaultText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    defaultText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    defaultText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -424,11 +487,19 @@ public class TextSimMainActivity extends AppCompatActivity {
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,50);
 
-                typeText.setShadowLayer(3.0f, 1.5f, 1.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    typeText.setShadowLayer(3.0f, 1.5f, 1.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    typeText.setShadowLayer(3.0f, 1.5f, 1.0f, Color.WHITE);
+                }
 
                 startTSimButton.setVisibility(View.INVISIBLE);
                 effectButton.setClickable(false);
                 overlayButton.setClickable(false);
+                typeText.setFocusableInTouchMode(false);
+                typeText.clearFocus();
             }
         }
     };
@@ -439,7 +510,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             EditText typeText = findViewById(R.id.typeTextFragmentEditText);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,125);
-                typeText.setShadowLayer(3.0f, 2.0f, 2.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    typeText.setShadowLayer(3.0f, 2.0f, 2.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    typeText.setShadowLayer(3.0f, 2.0f, 2.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -450,7 +527,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             EditText typeText = findViewById(R.id.typeTextFragmentEditText);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,250);
-                typeText.setShadowLayer(3.0f, 3.0f, 3.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    typeText.setShadowLayer(3.0f, 3.0f, 3.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    typeText.setShadowLayer(3.0f, 3.0f, 3.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -461,7 +544,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             EditText typeText = findViewById(R.id.typeTextFragmentEditText);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,375);
-                typeText.setShadowLayer(3.0f, 4.0f, 4.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    typeText.setShadowLayer(3.0f, 4.0f, 4.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    typeText.setShadowLayer(3.0f, 4.0f, 4.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -472,7 +561,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             EditText typeText = findViewById(R.id.typeTextFragmentEditText);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,500);
-                typeText.setShadowLayer(3.0f, 5.0f, 5.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    typeText.setShadowLayer(3.0f, 5.0f, 5.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    typeText.setShadowLayer(3.0f, 5.0f, 5.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -483,7 +578,13 @@ public class TextSimMainActivity extends AppCompatActivity {
             EditText typeText = findViewById(R.id.typeTextFragmentEditText);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,725);
-                typeText.setShadowLayer(3.0f, 5.5f, 6.0f, Color.BLACK);
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    typeText.setShadowLayer(3.0f, 5.5f, 6.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    typeText.setShadowLayer(3.0f, 5.5f, 6.0f, Color.WHITE);
+                }
             }
         }
     };
@@ -494,9 +595,26 @@ public class TextSimMainActivity extends AppCompatActivity {
             EditText typeText = findViewById(R.id.typeTextFragmentEditText);
             if (System.currentTimeMillis() - startTime < duration){
                 mHandlerDouble.postDelayed(this,800);
-                typeText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.BLACK);
-                Log.d("FADE", "FADEEEEEEEEEEEEEEEEEE");
+
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_NO){   // Night Mode is not active
+                    typeText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.BLACK);
+                }
+                if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
+                    typeText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.WHITE);
+                }
+                Log.d("Duble", "DoublEEEEEEEEEEEEEEEEEE");
             }
+        }
+    };
+
+    private final Handler mHandlerRecognizedText = new Handler(Looper.getMainLooper());
+    final Runnable rSetRecognizedText = new Runnable() {
+        @Override
+        public void run() {
+            EditText typeText = findViewById(R.id.typeTextFragmentEditText);
+            // String s = recognizedText.toString();
+            typeText.setText(recognizedText);
+            // Log.d("RUNNABLE TEXT", typeText);
         }
     };
 
@@ -507,15 +625,61 @@ public class TextSimMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_sim_main);
+        getSupportActionBar().setTitle("Text Simulation");
 
         Button startTSimButton = findViewById(R.id.startTSimButtonMain);
         effectButton = findViewById(R.id.effectTSimButtonMain);
         overlayButton = findViewById(R.id.overlayTSimButtonMain);
+        floatingAddButton = findViewById(R.id.floatingActionButtonMain);
+        floatingCameraButton = findViewById(R.id.floatingActionButtonCamera);
+        floatingHelpButton = findViewById(R.id.floatingActionButtonHelp);
+
+        takenImage = findViewById(R.id.imageView);
+        takenImage.setVisibility(View.INVISIBLE);
+
+        currentUIMode = getApplicationContext().getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        fabRotateOpen = AnimationUtils.loadAnimation(this, R.anim.rotate_open);
+        fabRotateClose = AnimationUtils.loadAnimation(this, R.anim.rotate_close);
+        fabFromClosed = AnimationUtils.loadAnimation(this, R.anim.from_closed);
+        fabToClosed = AnimationUtils.loadAnimation(this, R.anim.to_closed);
 
         FragmentManager fragmentTSimManager = getSupportFragmentManager();
         FragmentTransaction fragmentTSimTransaction = fragmentTSimManager.beginTransaction();
 
         fragmentTSimTransaction.add(R.id.fragmentContainerViewTextSim, allButtonsTextSimFragment, "ALL_BUTTONS_FRAGMENT").commit();
+
+        floatingCameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Camera Floating Button", Toast.LENGTH_SHORT).show();
+                if (ContextCompat.checkSelfPermission(TextSimMainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(TextSimMainActivity.this, new String[]{
+                            Manifest.permission.CAMERA
+                    }, PERMISSION_REQUEST);
+                } else{
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                }
+            }
+        });
+
+
+        floatingHelpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openHelpInfo();
+                Toast.makeText(getApplicationContext(), "Help Floating Button", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        floatingAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                animateFloatingButtons(isOpen);
+                isOpen = !isOpen;
+            }
+        });
 
         startTSimButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -527,6 +691,136 @@ public class TextSimMainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST){
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(getApplicationContext(), "Permission Not Granted", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // Inspired by https://stackoverflow.com/questions/69650098/google-mlkit-code-never-executes-addonsuccesslistener-and-addonfailurelisten
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String text = null;
+        EditText typeText = findViewById(R.id.typeTextFragmentEditText);
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK){
+            photo = (Bitmap) data.getExtras().get("data");
+            takenImage.setImageBitmap(photo); // to show the image in a ImageView
+            try {
+                Bitmap imageBitmap = ((BitmapDrawable) takenImage.getDrawable()).getBitmap();
+                InputImage inputImage = InputImage.fromBitmap(imageBitmap, 0);
+                text = detectTextFromImage(inputImage);
+                //detectTextFromImage(inputImage);
+                // typeText.setText(text);
+                //Log.d("SET TEXT TO", "" + text);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+//
+
+
+    private String processTextRecognitionResult(Text texts) {
+        EditText typeText = findViewById(R.id.typeTextFragmentEditText);
+        recognizedText = "";
+        List<Text.TextBlock> blocks = texts.getTextBlocks();
+        if (blocks.size() == 0) {
+            // No text found
+            Log.d("Text null","No text is found");
+        }
+        else {
+            for (int i = 0; i < blocks.size(); i++) {
+                List<Text.Line> lines = blocks.get(i).getLines();
+                for (int j = 0; j < lines.size(); j++) {
+                    List<Text.Element> elements = lines.get(j).getElements();
+                    for (int k = 0; k < elements.size(); k++) {
+                        String elementText = elements.get(k).getText();
+                        recognizedText = recognizedText + elementText + " ";
+
+                    }
+                }
+            }
+            // typeText.setText(recognizedText);
+        }
+        return recognizedText;
+    }
+
+    private String detectTextFromImage(InputImage inputImage) throws CameraAccessException {
+        EditText typeText = findViewById(R.id.typeTextFragmentEditText);  // USE THIS
+        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+//        Bitmap imageBitmap = ((BitmapDrawable) takenImage.getDrawable()).getBitmap();     // AND THIS
+//        InputImage inputImage = InputImage.fromBitmap(imageBitmap, 0);        // AND THIS
+
+        Task<Text> imageResult = recognizer.process(inputImage)
+                .addOnSuccessListener(new OnSuccessListener<Text>() {
+                    @Override
+                    public void onSuccess(Text text) {
+//                        typeText.setText(processTextRecognitionResult(text));
+                        recognizedText = processTextRecognitionResult(text);
+                        // typeText.setText(text.getText());
+                        Log.d("Success","IMAGE Recognizer Success");
+                        Log.d("RECOGNIZED TEXT", recognizedText);
+                        typeText.setText(text.getText());
+                        //mHandlerRecognizedText.post(rSetRecognizedText);
+                        Log.d("TEXT IS","" + typeText);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("FAIL","IMAGE Recognizer Failed");
+                    }
+                });
+        return recognizedText;
+    }
+
+    public void openHelpInfo(){
+        HelpDialog helpDialog = new HelpDialog();
+        helpDialog.show(getSupportFragmentManager(), "help dialog");
+    }
+
+    private void animateFloatingButtons(Boolean isOpen){
+        if (!isOpen){
+            floatingCameraButton.setVisibility(View.VISIBLE);
+            floatingCameraButton.setVisibility(View.VISIBLE);
+            floatingAddButton.startAnimation(fabRotateOpen);
+            floatingCameraButton.startAnimation(fabFromClosed);
+            floatingHelpButton.startAnimation(fabFromClosed);
+        } else {
+            floatingCameraButton.setVisibility(View.INVISIBLE);
+            floatingHelpButton.setVisibility(View.INVISIBLE);
+            floatingAddButton.startAnimation(fabRotateClose);
+            floatingCameraButton.startAnimation(fabToClosed);
+            floatingHelpButton.startAnimation(fabToClosed);
+        }
+    }
+
+
+
+    // https://stackoverflow.com/questions/17854528/actionbar-up-button-transition-effect
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            finish();
+            overridePendingTransition(R.anim.from_left, R.anim.to_right);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.from_left, R.anim.to_right);
     }
 
     // https://www.youtube.com/watch?v=DyJ4hOS3qrQ&ab_channel=AndroidRion
@@ -556,43 +850,43 @@ public class TextSimMainActivity extends AppCompatActivity {
                         if (currentFragment.equals("DummyTextFragment")) {     // add || typeTextFragmentMain.isVisible()
                             // Log.d("WORKS", "THIS WORKS");
                             if (overlayRadioButtonString.equals(overlay_options[0])) {
-                                dummyTextFragmentMain.getView().setBackgroundColor(Color.rgb(255, 255, 255));
+                                dummyTextFragmentMain.getView().setBackgroundColor(getResources().getColor(R.color.fragment_background));
                                 Log.d("OVERLAY", "NONE");
                                 overlayButton.setText(overlayRadioButtonString);
                             }
                             if (overlayRadioButtonString.equals(overlay_options[1])) {
                                 // allButtonsTextSimFragment.getView().setBackgroundColor(Color.rgb(204, 255, 255));
-                                dummyTextFragmentMain.getView().setBackgroundColor(Color.rgb(204, 255, 255));
+                                dummyTextFragmentMain.getView().setBackgroundColor(getResources().getColor(R.color.blue));
                                 Log.d("OVERLAY", "IT IS BLUE");
                                 overlayButton.setText(overlayRadioButtonString);
                             }
                             if (overlayRadioButtonString.equals(overlay_options[2])) {
                                 // allButtonsTextSimFragment.getView().setBackgroundColor(Color.rgb(204, 255, 255));
-                                dummyTextFragmentMain.getView().setBackgroundColor(Color.rgb(204, 204, 255));
+                                dummyTextFragmentMain.getView().setBackgroundColor(getResources().getColor(R.color.purple));
                                 Log.d("OVERLAY", "IT IS PURPLE");
                                 overlayButton.setText(overlayRadioButtonString);
                             }
                             if (overlayRadioButtonString.equals(overlay_options[3])) {
                                 // allButtonsTextSimFragment.getView().setBackgroundColor(Color.rgb(204, 255, 255));
-                                dummyTextFragmentMain.getView().setBackgroundColor(Color.rgb(255, 204, 255));
+                                dummyTextFragmentMain.getView().setBackgroundColor(getResources().getColor(R.color.pink));
                                 Log.d("OVERLAY", "IT IS PINK");
                                 overlayButton.setText(overlayRadioButtonString);
                             }
                             if (overlayRadioButtonString.equals(overlay_options[4])) {
                                 // allButtonsTextSimFragment.getView().setBackgroundColor(Color.rgb(204, 255, 255));
-                                dummyTextFragmentMain.getView().setBackgroundColor(Color.rgb(204, 255, 204));
+                                dummyTextFragmentMain.getView().setBackgroundColor(getResources().getColor(R.color.green));
                                 Log.d("OVERLAY", "IT IS GREEN");
                                 overlayButton.setText(overlayRadioButtonString);
                             }
                             if (overlayRadioButtonString.equals(overlay_options[5])) {
                                 // allButtonsTextSimFragment.getView().setBackgroundColor(Color.rgb(204, 255, 255));
-                                dummyTextFragmentMain.getView().setBackgroundColor(Color.rgb(255, 255, 204));
+                                dummyTextFragmentMain.getView().setBackgroundColor(getResources().getColor(R.color.yellow));
                                 Log.d("OVERLAY", "IT IS YELLOW");
                                 overlayButton.setText(overlayRadioButtonString);
                             }
                             if (overlayRadioButtonString.equals(overlay_options[6])) {
                                 // allButtonsTextSimFragment.getView().setBackgroundColor(Color.rgb(204, 255, 255));
-                                dummyTextFragmentMain.getView().setBackgroundColor(Color.rgb(255, 217, 179));
+                                dummyTextFragmentMain.getView().setBackgroundColor(getResources().getColor(R.color.orange));
                                 Log.d("OVERLAY", "IT IS ORANGE");
                                 overlayButton.setText(overlayRadioButtonString);
                             }
@@ -657,6 +951,9 @@ public class TextSimMainActivity extends AppCompatActivity {
         typeTextFragmentMain = getSupportFragmentManager().findFragmentByTag("TYPE_TEXT_FRAGMENT");
         TextView defaultText = findViewById(R.id.dummyEditTextFragment);
         EditText typeText = findViewById(R.id.typeTextFragmentEditText);
+//        Log.d("RECOGNIZE TEXT CHOSE EF","" + recognizedText);
+//        String t = recognizedText;
+//        Log.d("T",t);
 
         if (allButtonsTextSimFragment.isVisible()) {
             Toast.makeText(getApplicationContext(), "Choose text option first", Toast.LENGTH_LONG).show();
@@ -677,6 +974,8 @@ public class TextSimMainActivity extends AppCompatActivity {
                         Snackbar.make(view, effectRadioButtonString, Snackbar.LENGTH_SHORT).show();
                         if (effectRadioButtonString.equals(effect_options[1])) {
                             Log.d("Effect", "Shuffle");
+//                            Log.d("CHOSE EFFECT TEXT IS","" + typeText);
+//                            Log.d("recogniz EFFECT TEXT IS","" + recognizedText);
                             effectButton.setText(effectRadioButtonString);
                         }
                         if (effectRadioButtonString.equals(effect_options[2])) {

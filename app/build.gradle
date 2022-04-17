@@ -39,4 +39,12 @@ dependencies {
 
     implementation 'com.daimajia.androidanimations:library:2.4@aar'
 
+    // Google ML Kit (for text scanning)
+    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:18.0.0'
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.13.0'
+    // For Image cropping
+    implementation 'com.github.CanHub:Android-Image-Cropper:4.2.1'
+    // implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
+
 }

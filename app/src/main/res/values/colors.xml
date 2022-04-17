@@ -7,10 +7,22 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
     <color name="blue">#80ccffff</color>
     <color name="purple">#80ccccff</color>
     <color name="pink">#80ffe6ff</color>
     <color name="green">#80ccffcc</color>
     <color name="yellow">#80ffffcc</color>
     <color name="orange">#80ffdab3</color>
+
+    <color name="buttons">#33658A</color>
+    <color name="run_sim_button">#D15717</color>
+    <color name="add_button">#86BBD8</color>
+    <color name="sub_add_buttons">#F6AE2D</color>
+    <color name="main_text">#FF000000</color>
+    <color name="hint_text">#777777</color>
+    <color name="dropdown_buttons_text">#000000</color>
+    <color name="activity_background">#FFEDEDED</color>
+    <color name="fragment_background">#FFFFFFFF</color>
+
 </resources>
