@@ -93,26 +93,26 @@
         android:id="@+id/floatingActionButtonCamera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/sub_add_buttons"
         android:clickable="true"
         android:focusable="true"
         android:visibility="invisible"
-        android:backgroundTint="@color/sub_add_buttons"
-        app:layout_constraintBottom_toTopOf="@+id/floatingActionButtonMain"
-        app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonMain"
+        app:layout_constraintBottom_toTopOf="@+id/floatingActionButtonHelp"
+        app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonHelp"
         app:srcCompat="@drawable/ic_camera" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButtonHelp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/sub_add_buttons"
         android:clickable="true"
         android:focusable="true"
-        android:backgroundTint="@color/sub_add_buttons"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/floatingActionButtonCamera"
-        app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonCamera"
+        app:layout_constraintBottom_toTopOf="@+id/floatingActionButtonMain"
+        app:layout_constraintEnd_toEndOf="@+id/floatingActionButtonMain"
         app:srcCompat="@drawable/ic_help" />
 
     <ImageView

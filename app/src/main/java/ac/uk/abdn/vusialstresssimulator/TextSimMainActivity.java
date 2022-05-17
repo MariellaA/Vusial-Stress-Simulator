@@ -189,7 +189,7 @@ public class TextSimMainActivity extends AppCompatActivity {
                 overlayButton.setClickable(true);
                 // typeText.setFocusableInTouchMode(true); // Cause problem when in DefaultText
                 // typeText.clearFocus();
-                Log.d("RESET BUTTON", "RESET THAT GOD DAMN BUTTON");
+                //Log.d("RESET BUTTON", "RESET THAT GOD DAMN BUTTON");
             }
         }
     };
@@ -344,7 +344,7 @@ public class TextSimMainActivity extends AppCompatActivity {
                 mHandlerFade.postDelayed(this, 200);
                 TextView defaultText = findViewById(R.id.dummyEditTextFragment);
                 defaultText.setText(getResources().getString(R.string.dummy_text));
-                Log.d("SHAHETHRTHSRTH", "GRGEBTBHRTHTAHTRSHBT");
+                // Log.d("SHAHETHRTHSRTH", "GRGEBTBHRTHTAHTRSHBT");
             }
         }
     };
@@ -602,7 +602,7 @@ public class TextSimMainActivity extends AppCompatActivity {
                 if (currentUIMode == Configuration.UI_MODE_NIGHT_YES){  // Night Mode is active
                     typeText.setShadowLayer(3.0f, 6.0f, 7.0f, Color.WHITE);
                 }
-                Log.d("Duble", "DoublEEEEEEEEEEEEEEEEEE");
+                //Log.d("Duble", "DoublEEEEEEEEEEEEEEEEEE");
             }
         }
     };
@@ -713,7 +713,7 @@ public class TextSimMainActivity extends AppCompatActivity {
         EditText typeText = findViewById(R.id.typeTextFragmentEditText);
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK){
             photo = (Bitmap) data.getExtras().get("data");
-            takenImage.setImageBitmap(photo); // to show the image in a ImageView
+            takenImage.setImageBitmap(photo); // to show the image in an ImageView
             try {
                 Bitmap imageBitmap = ((BitmapDrawable) takenImage.getDrawable()).getBitmap();
                 InputImage inputImage = InputImage.fromBitmap(imageBitmap, 0);
@@ -789,18 +789,59 @@ public class TextSimMainActivity extends AppCompatActivity {
     }
 
     private void animateFloatingButtons(Boolean isOpen){
+        String currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainerViewTextSim).getClass().getSimpleName();
+        floatingHelpButton.setClickable(true);
+        floatingCameraButton.setClickable(true);
         if (!isOpen){
-            floatingCameraButton.setVisibility(View.VISIBLE);
-            floatingCameraButton.setVisibility(View.VISIBLE);
-            floatingAddButton.startAnimation(fabRotateOpen);
-            floatingCameraButton.startAnimation(fabFromClosed);
-            floatingHelpButton.startAnimation(fabFromClosed);
+            if (currentFragment.equals("AllButtonsTextSimFragment")){
+                // floatingCameraButton.setVisibility(View.INVISIBLE);
+                floatingHelpButton.setVisibility(View.VISIBLE);
+                floatingCameraButton.setVisibility(View.INVISIBLE);
+                floatingCameraButton.setClickable(false);
+                floatingHelpButton.startAnimation(fabFromClosed);
+                floatingAddButton.startAnimation(fabRotateOpen);
+            }
+            if (currentFragment.equals("DummyTextFragment")){
+                // floatingCameraButton.setVisibility(View.INVISIBLE);
+                floatingHelpButton.setVisibility(View.VISIBLE);
+                floatingCameraButton.setVisibility(View.INVISIBLE);
+                floatingCameraButton.setClickable(false);
+                floatingHelpButton.startAnimation(fabFromClosed);
+                floatingAddButton.startAnimation(fabRotateOpen);
+            }
+            if (currentFragment.equals("TypeTextFragment")) {
+                floatingHelpButton.setVisibility(View.VISIBLE);
+                floatingCameraButton.setVisibility(View.VISIBLE);
+                floatingAddButton.startAnimation(fabRotateOpen);
+                floatingHelpButton.startAnimation(fabFromClosed);
+                floatingCameraButton.startAnimation(fabFromClosed);
+
+            }
         } else {
-            floatingCameraButton.setVisibility(View.INVISIBLE);
-            floatingHelpButton.setVisibility(View.INVISIBLE);
-            floatingAddButton.startAnimation(fabRotateClose);
-            floatingCameraButton.startAnimation(fabToClosed);
-            floatingHelpButton.startAnimation(fabToClosed);
+            if (currentFragment.equals("DummyTextFragment")){
+                // floatingCameraButton.setVisibility(View.INVISIBLE);
+                floatingHelpButton.setVisibility(View.INVISIBLE);
+                floatingAddButton.startAnimation(fabRotateClose);
+                floatingHelpButton.startAnimation(fabToClosed);
+                floatingHelpButton.setClickable(false);
+                // floatingCameraButton.startAnimation(fabToClosed);
+            }
+            if (currentFragment.equals("AllButtonsTextSimFragment")){
+                // floatingCameraButton.setVisibility(View.INVISIBLE);
+                floatingHelpButton.setVisibility(View.INVISIBLE);
+                floatingAddButton.startAnimation(fabRotateClose);
+                floatingHelpButton.startAnimation(fabToClosed);
+                floatingHelpButton.setClickable(false);
+                // floatingCameraButton.startAnimation(fabToClosed);
+            }
+            if (currentFragment.equals("TypeTextFragment")) {
+                floatingHelpButton.setClickable(false);
+                floatingCameraButton.setVisibility(View.INVISIBLE);
+                floatingHelpButton.setVisibility(View.INVISIBLE);
+                floatingAddButton.startAnimation(fabRotateClose);
+                floatingHelpButton.startAnimation(fabToClosed);
+                floatingCameraButton.startAnimation(fabToClosed);
+            }
         }
     }
 
@@ -951,9 +992,7 @@ public class TextSimMainActivity extends AppCompatActivity {
         typeTextFragmentMain = getSupportFragmentManager().findFragmentByTag("TYPE_TEXT_FRAGMENT");
         TextView defaultText = findViewById(R.id.dummyEditTextFragment);
         EditText typeText = findViewById(R.id.typeTextFragmentEditText);
-//        Log.d("RECOGNIZE TEXT CHOSE EF","" + recognizedText);
-//        String t = recognizedText;
-//        Log.d("T",t);
+
 
         if (allButtonsTextSimFragment.isVisible()) {
             Toast.makeText(getApplicationContext(), "Choose text option first", Toast.LENGTH_LONG).show();
@@ -974,8 +1013,6 @@ public class TextSimMainActivity extends AppCompatActivity {
                         Snackbar.make(view, effectRadioButtonString, Snackbar.LENGTH_SHORT).show();
                         if (effectRadioButtonString.equals(effect_options[1])) {
                             Log.d("Effect", "Shuffle");
-//                            Log.d("CHOSE EFFECT TEXT IS","" + typeText);
-//                            Log.d("recogniz EFFECT TEXT IS","" + recognizedText);
                             effectButton.setText(effectRadioButtonString);
                         }
                         if (effectRadioButtonString.equals(effect_options[2])) {
@@ -1080,34 +1117,6 @@ public class TextSimMainActivity extends AppCompatActivity {
         typeText.getPaint().setMaskFilter(blurryFilter);
     }
 
-//    public void setShadowXY(Target view,  Property<View, Float>, float from, float to, Duration secs, Interpolator TimeInterpolator) {
-//        EditText defaultText = findViewById(R.id.dummyEditTextFragment);
-//        doubleTextAnimatorX = ObjectAnimator.ofFloat(view, Property,0.0f, 6.0f);
-//        defaultText.setShadowLayer(3.0f, shadowX, 0.0f, Color.BLACK);
-//    }
-
-//    public void animShadowXY() {
-//        EditText defaultText = findViewById(R.id.dummyEditTextFragment);
-//        Animation doubleTextAnimatorXY = AnimationUtils.loadAnimation(this, R.anim.fade_out);
-//        defaultText.animShadowXY(doubleTextAnimatorXY);
-//    }
-
-//        public void animShadow(Integer toRadius,Integer toDx,Integer toDy) {
-//            EditText defaultText = findViewById(R.id.dummyEditTextFragment);
-//        // Animation doubleTextAnimatorXY = AnimationUtils.loadAnimation(this, R.anim.fade_out);
-//        // defaultText.animShadowXY(doubleTextAnimatorXY);
-////            shadowRadius = PropertyValuesHolder.ofFloat("shadowRadius", fromRadius, toRadius);
-////            shadowDx = PropertyValuesHolder.ofFloat("shadowDx",fromDx, toDx);
-////            shadowDy = PropertyValuesHolder.ofFloat("shadowDy", fromDy, toDy);
-////
-////            ValueAnimator.ofPropertyValuesHolder(animShadow(shadowR))
-//            ObjectAnimator shadowRadius = ObjectAnimator.ofInt(defaultText, "shadowRadius", toRadius);
-//            ObjectAnimator shadowDx = ObjectAnimator.ofInt(defaultText, "shadowDx", toDx);
-//            ObjectAnimator shadowDy = ObjectAnimator.ofInt(defaultText, "shadowDy", toDy);
-//            AnimatorSet animSetShadow = new AnimatorSet();
-//            animSetShadow.playTogether(shadowRadius, shadowDx, shadowDy);
-//            animSetShadow.start();
-//    }
 
     public void saveOriginalText() {
         EditText typeText = findViewById(R.id.typeTextFragmentEditText);
@@ -1162,7 +1171,6 @@ public class TextSimMainActivity extends AppCompatActivity {
                     }
                     if (effectButton.getText().toString().equals("Double")) {
                         Log.d("EFFECT", "DOUBLE");
-                        // YoYo.with(Techniques.Wave).duration(1000).repeat(1).playOn(defaultText);
                         startTime = System.currentTimeMillis();
                         mHandlerDouble.post(rDoubleDefault1);
                         mHandlerDouble.postDelayed(rDoubleDefault2, 250);

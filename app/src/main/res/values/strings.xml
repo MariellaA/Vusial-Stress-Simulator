@@ -4,7 +4,13 @@
     <string name="stop_simulation">Stop Simulation</string>
     <string name="add_effect">Add Effect</string>
     <string name="add_overlay">Add Overlay</string>
-    <string name="dummy_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod odio tortor, at imperdiet arcu fermentum nec. Aenean congue orci eget tellus cursus eleifend. Pellentesque laoreet ante sit amet gravida cursus. In vel ex luctus, ullamcorper nisl vel, ultrices dolor. Vivamus quis enim scelerisque, sodales risus sed, volutpat justo. Fusce sit amet ligula eget augue suscipit pellentesque in id leo. Aenean molestie diam ut ligula vehicula, eu iaculis erat dictum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
+<!-- Text taken from http://www.english-for-students.com/A-friend-in-need-is-a-friend-indeed.html -->
+    <string name="dummy_text">Once upon a time there lived a lion in a forest. One day after a heavy meal. It was sleeping under a tree. After a while, there came a mouse and it started to play on the lion.
+        Suddenly the lion got up with anger and looked for those who disturbed its nice sleep. Then it saw a small
+        mouse standing trembling with fear. The lion jumped on it and started to kill it. The mouse requested the
+        lion to forgive it. The lion felt pity and left it. The mouse ran away. On another day, the lion was
+        caught in a net by a hunter. The mouse came there and cut the net. Thus it escaped. There after, the
+        mouse and the lion became friends. They lived happily in the forest afterwards.</string>
     <string name="choose_a_simulation_type">Choose a simulation type</string>
     <string name="text">Text</string>
     <string name="image">Image</string>
@@ -12,7 +18,7 @@
     <string name="scan_text">Scan Text</string>
     <string name="take_photo">Take Photo</string>
     <string name="upload_photo">Upload Photo</string>
-    <string name="welcome_to">Welcome to APPNAME!</string>
+    <string name="welcome_to">Welcome to VSS!</string>
     <string name="default_text">Default Text</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
