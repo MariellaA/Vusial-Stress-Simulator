@@ -80,10 +80,9 @@ public class TextSimMainActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 100;
     private static final int PERMISSION_REQUEST = 100;
     private Bitmap photo;
-    private int rotationCompensation;
     private String recognizedText;
 
-    private String typeTextStringOriginal;
+
     private String[] splitDummyText;
     private String[] splitTypeText;
     public static final String SHARED_PREFERENCES = "sharedPreferences";
@@ -95,12 +94,16 @@ public class TextSimMainActivity extends AppCompatActivity {
     private final Handler mHandlerFade = new Handler(Looper.getMainLooper());
     private final Handler mHandlerButtonReset = new Handler(Looper.getMainLooper());
     private final Handler mHandlerDouble = new Handler(Looper.getMainLooper());
-    private final int duration = 10000;
-    private final int durationFadeReverse = 250;
-    private final int durationButtonReset = 11000;
+    private final int duration = 10000;     // EFFECTS RUN FOR 10 SECONDS
+//    private final int durationFadeReverse = 250;
+//    private final int durationButtonReset = 11000;
     private long startTime = System.currentTimeMillis();
 
 // --------------------------- Effects - Start -------------------------------------
+
+    // -------------------------- SHUFFLE EFFECTS ------------------------
+
+    // SHUFLLE for DummyTextFragment
     final Runnable rShuffleDefault = new Runnable() {
         public void run() {
             TextView defaultText = findViewById(R.id.dummyEditTextFragment);
@@ -121,11 +124,11 @@ public class TextSimMainActivity extends AppCompatActivity {
                 String scrambledWordHolder = new String(" ");         // creates a new empty string
                 Scanner wordScanner = new Scanner(defaultTextString);       // creates a Scanner which goes through the whole string (scans)
 
-                while (wordScanner.hasNextLine()) {
-                    String wordScrambled = wordScanner.next();
+                while (wordScanner.hasNextLine()) {         // checks if there is next line
+                    String wordScrambled = wordScanner.next();      // checks if there is next word
                     // System.out.println(wordScrambled);
                     // System.out.println(scramble(wordScrambled));
-                    scrambledStringBuilder.append(scramble(wordScrambled)).append(" ");
+                    scrambledStringBuilder.append(scramble(wordScrambled)).append(" ");     // calls the public scramble method
                 }
                 scrambledWordHolder = scrambledStringBuilder.toString().trim();     // removes the empty space at the end of the string
                 Log.d("String", scrambledWordHolder);
@@ -137,6 +140,8 @@ public class TextSimMainActivity extends AppCompatActivity {
         }
     };
 
+
+    // SHUFFLE for TypeTextFragment
     final Runnable rShuffleType = new Runnable() {
         public void run() {
             EditText typeText = findViewById(R.id.typeTextFragmentEditText);
@@ -176,6 +181,7 @@ public class TextSimMainActivity extends AppCompatActivity {
         }
     };
 
+    // BUTTON RESET
     final Runnable rButtonReset = new Runnable() {
         public void run() {
             EditText typeText = findViewById(R.id.typeTextFragmentEditText);
@@ -194,6 +200,9 @@ public class TextSimMainActivity extends AppCompatActivity {
         }
     };
 
+// -------------------------------------------- FADE EFFECTS BEGIN ---------------------------------------
+
+    // FADE EFFECT FOR DummyTextFragment
     final Runnable rFadeDefault = new Runnable() {
         @Override
         public void run() {
@@ -265,6 +274,7 @@ public class TextSimMainActivity extends AppCompatActivity {
         }
     };
 
+    // FADE EFFECT FOR TypeTextFragment
     final Runnable rFadeType = new Runnable() {
         @Override
         public void run() {
@@ -284,13 +294,13 @@ public class TextSimMainActivity extends AppCompatActivity {
                 int wordIndex = (int) (Math.random() * splitTypeText.length-1);    // random word index
                 String currentWord = splitTypeText[wordIndex];
 
-                if (currentWord.matches("\\s") || currentWord.length() < 3) {       // if it contains white space
+                if (currentWord.matches("\\s") || currentWord.length() < 3) {       // if it contains white space (already removed word)
                     wordIndex = (int) (Math.random() * splitTypeText.length-1);
                     Log.d("Word EMPTY", "Empty");
                 }
                 if (!currentWord.matches("\\s") && currentWord.length() > 3){       // if it doesn't contain any white spaces
 
-                    StringBuilder wordAtIndexCharsReplace = new StringBuilder();    // holds current word?
+                    StringBuilder wordAtIndexCharsReplace = new StringBuilder();    // holds current word (its not a string)
                     // if (currentWord.substring(currentWord.length() - 1).equals(".")) {
                     if (currentWord.endsWith(".")) {
                         // wordlength = currentWord.length() -2;
@@ -321,7 +331,7 @@ public class TextSimMainActivity extends AppCompatActivity {
                         }
                     }
 
-                    splitTypeText[wordIndex] = wordAtIndexCharsReplace.toString();  // changes the word in the list to its new form
+                    splitTypeText[wordIndex] = wordAtIndexCharsReplace.toString();  // changes the word in the array to its new form (StringBuilder.toString())
 
                     StringBuilder finalTextBuilder = new StringBuilder();
                     for (String word : splitTypeText) {
@@ -329,7 +339,7 @@ public class TextSimMainActivity extends AppCompatActivity {
                     }
 
                     String newTextString = finalTextBuilder.toString();
-                    String finalText = newTextString.replaceAll("¬", "  ");
+                    String finalText = newTextString.replaceAll("¬", "  ");       // replaces the "-" with white spaces; -> gap as long as the word
 
                     typeText.setText(finalText);
                 }
@@ -337,18 +347,10 @@ public class TextSimMainActivity extends AppCompatActivity {
         }
     };
 
-    final Runnable rFadeReverseDefault = new Runnable() {
-        @Override
-        public void run() {
-            if (System.currentTimeMillis() - startTime < duration) {
-                mHandlerFade.postDelayed(this, 200);
-                TextView defaultText = findViewById(R.id.dummyEditTextFragment);
-                defaultText.setText(getResources().getString(R.string.dummy_text));
-                // Log.d("SHAHETHRTHSRTH", "GRGEBTBHRTHTAHTRSHBT");
-            }
-        }
-    };
+// ---------------------------------------- FADE EFFECTS END ---------------------------------------
 
+
+// ------------------------------------ DOUBLE EFFECTS ---------------------------------------------
     final Runnable rDoubleDefault1 = new Runnable() {
         @Override
         public void run() {
@@ -607,16 +609,8 @@ public class TextSimMainActivity extends AppCompatActivity {
         }
     };
 
-    private final Handler mHandlerRecognizedText = new Handler(Looper.getMainLooper());
-    final Runnable rSetRecognizedText = new Runnable() {
-        @Override
-        public void run() {
-            EditText typeText = findViewById(R.id.typeTextFragmentEditText);
-            // String s = recognizedText.toString();
-            typeText.setText(recognizedText);
-            // Log.d("RUNNABLE TEXT", typeText);
-        }
-    };
+// ---------------------------------- DOUBLE EFFECTS END ----------------------------------
+
 
 // --------------------------- Effects - End -------------------------------------
 
@@ -754,6 +748,7 @@ public class TextSimMainActivity extends AppCompatActivity {
         return recognizedText;
     }
 
+    // Text Scanner
     private String detectTextFromImage(InputImage inputImage) throws CameraAccessException {
         EditText typeText = findViewById(R.id.typeTextFragmentEditText);  // USE THIS
         TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
@@ -783,11 +778,13 @@ public class TextSimMainActivity extends AppCompatActivity {
         return recognizedText;
     }
 
+    // Help button
     public void openHelpInfo(){
         HelpDialog helpDialog = new HelpDialog();
         helpDialog.show(getSupportFragmentManager(), "help dialog");
     }
 
+    // The "+" Button
     private void animateFloatingButtons(Boolean isOpen){
         String currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainerViewTextSim).getClass().getSimpleName();
         floatingHelpButton.setClickable(true);
@@ -859,13 +856,13 @@ public class TextSimMainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed() {   // back button
         super.onBackPressed();
         overridePendingTransition(R.anim.from_left, R.anim.to_right);
     }
 
     // https://www.youtube.com/watch?v=DyJ4hOS3qrQ&ab_channel=AndroidRion
-    public void chooseOverlay(View view) {
+    public void chooseOverlay(View view) { // sets all overlays
         int id = view.getId();  // gets button's ID
         String currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainerViewTextSim).getClass().getSimpleName();
         dummyTextFragmentMain = getSupportFragmentManager().findFragmentByTag("DEFAULT_TEXT_FRAGMENT");
@@ -1082,6 +1079,7 @@ public class TextSimMainActivity extends AppCompatActivity {
         }
     }
 
+    // From: https://stackoverflow.com/questions/27535402/shuffle-middle-characters-of-words-in-a-string
     private static String scramble(char firstLetter, char lastLetter, String word) {        // Second Scramble Part
         String shuffledString = "" + firstLetter; // + first letter
         while (word.length() != 0) {
@@ -1101,14 +1099,16 @@ public class TextSimMainActivity extends AppCompatActivity {
         return scramble(word.charAt(0), word.charAt(word.length() - 1), middleLetters);
     }
 
+    // BLURRY EFFECT for DummyTextFragment
     public void blurEffectDefault(View view) {
         TextView defaultText = findViewById(R.id.dummyEditTextFragment);
         defaultText.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        float filterRadius = defaultText.getTextSize() / 9;
+        float filterRadius = defaultText.getTextSize() / 9;     // sets how blurry to be
         BlurMaskFilter blurryFilter = new BlurMaskFilter(filterRadius, BlurMaskFilter.Blur.NORMAL);
-        defaultText.getPaint().setMaskFilter(blurryFilter);
+        defaultText.getPaint().setMaskFilter(blurryFilter); // blurries the text
     }
 
+    //BLURRY EFFECT for TypeTextFragment
     public void blurEffectType(View view) {
         EditText typeText = findViewById(R.id.typeTextFragmentEditText);
         typeText.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -1129,6 +1129,7 @@ public class TextSimMainActivity extends AppCompatActivity {
     }
 
 
+    // All simulations start from here
     public void startSim(View view) throws InterruptedException {
 
         String currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainerViewTextSim).getClass().getSimpleName();
@@ -1146,7 +1147,7 @@ public class TextSimMainActivity extends AppCompatActivity {
             if (effectButton.getText().toString().equals(getResources().getString(R.string.add_effect)) || effectButton.getText().toString().equals("None")) {
                 Toast.makeText(getApplicationContext(), "Choose effect", Toast.LENGTH_SHORT).show();
             } else {
-                if (currentFragment.equals("DummyTextFragment")) {
+                if (currentFragment.equals("DummyTextFragment")) {  // checks if the current open fragment is the dummyTextFragment
 
                     TextView defaultText = findViewById(R.id.dummyEditTextFragment);
                     String defaultTextString = defaultText.getText().toString();
@@ -1184,7 +1185,7 @@ public class TextSimMainActivity extends AppCompatActivity {
                         Log.d("NO", "NOT OPEN OR NULL!");
                     }
                 }
-                if (currentFragment.equals("TypeTextFragment")) {
+                if (currentFragment.equals("TypeTextFragment")) { // checks if the current open fragment is the TypeTextFragment
 
                     EditText typeText = findViewById(R.id.typeTextFragmentEditText);
                     // String typeTextStringModify = typeTextStringOriginal;
@@ -1201,7 +1202,7 @@ public class TextSimMainActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), " The Shuffle effect requires more text", Toast.LENGTH_SHORT).show();
                             }
                             else {
-                                if (changed <= 1){
+                                if (changed <= 1){      // used to enable/disable text edit
                                     saveOriginalText();
                                     Log.i("Check if changed <=1", "Save Text");
                                 }
@@ -1221,7 +1222,7 @@ public class TextSimMainActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), " The Fade effect requires more text", Toast.LENGTH_SHORT).show();
                             }
                             else {
-                                if (changed <= 1){
+                                if (changed <= 1){  // used to enable/disable text edit
                                     saveOriginalText();
                                     Log.i("Check if changed <=1", "Save Text");
                                 }
